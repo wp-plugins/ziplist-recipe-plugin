@@ -4,7 +4,7 @@ Plugin Name: ZipList Recipe Plugin
 Plugin URI: http://www.ziplist.com/recipe_plugin
 Plugin GitHub: https://github.com/Ziplist/recipe_plugin
 Description: A plugin that adds all the necessary microdata to your recipes, so they will show up in Google's Recipe Search
-Version: 1.1
+Version: 1.2
 Author: ZipList.com
 Author URI: http://www.ziplist.com/
 License: GPLv2 or later
@@ -38,7 +38,7 @@ if (!defined('AMD_ZLRECIPE_VERSION_KEY'))
     define('AMD_ZLRECIPE_VERSION_KEY', 'amd_zlrecipe_version');
 
 if (!defined('AMD_ZLRECIPE_VERSION_NUM'))
-    define('AMD_ZLRECIPE_VERSION_NUM', '1.1'); //!!mwp
+    define('AMD_ZLRECIPE_VERSION_NUM', '1.2'); //!!mwp
     
 if (!defined('AMD_ZLRECIPE_PLUGIN_DIRECTORY'))
     define('AMD_ZLRECIPE_PLUGIN_DIRECTORY', get_option('siteurl') . '/wp-content/plugins/' . dirname(plugin_basename(__FILE__)) . '/');
@@ -433,6 +433,11 @@ function amd_zlrecipe_add_recipe_button() {
 	echo "<a class=\"thickbox\" href=\"{$media_amd_zlrecipe_iframe_src}&amp;TB_iframe=true&amp;height=500&amp;width=640\" title=\"$media_amd_zlrecipe_title\"><img src='" . get_option('siteurl').'/wp-content/plugins/'.dirname(plugin_basename(__FILE__)) . "/zlrecipe.gif?ver=1.0' alt='ZLRecipe Icon' /></a>";
 }
 
+function amd_zlrecipe_strip_chars( $val )
+{
+	return str_replace( '\\', '', $val );
+}
+
 // Content for the popup iframe when creating or editing a recipe
 function amd_zlrecipe_iframe_content($post_info = null, $get_info = null) {
     $recipe_id = 0;
@@ -454,9 +459,9 @@ function amd_zlrecipe_iframe_content($post_info = null, $get_info = null) {
             $recipe = amd_zlrecipe_select_recipe_db($recipe_id);
             //!!mwp $ingredients_list = amd_zlrecipe_select_ingredients_db($recipe_id);
             
-            $recipe_title = $recipe->recipe_title;
+            $recipe_title = $recipe->recipe_title; //!!xxx amd_zlrecipe_strip_chars( $recipe->recipe_title );
             $recipe_image = $recipe->recipe_image;
-            $summary = $recipe->summary;
+            $summary = $recipe->summary; //!!xxx amd_zlrecipe_strip_chars( $recipe->summary );
             $rating = $recipe->rating;
             $ss = array();
             $ss[(int)$rating] = 'selected="true"';
@@ -579,8 +584,8 @@ function amd_zlrecipe_iframe_content($post_info = null, $get_info = null) {
                 $i++;
             }
 */
-            $ingredients = $recipe->ingredients; //!!mwp
-            $instructions = $recipe->instructions;
+            $ingredients = $recipe->ingredients; //!!xxx amd_zlrecipe_strip_chars( $recipe->ingredients ); //!!mwp
+            $instructions = $recipe->instructions; //!!xxx amd_zlrecipe_strip_chars( $recipe->instructions );
             //!!mwp $iframe_title = "Update Your Recipe";
             //!!mwp $submit = "Update Recipe";
         } else {
@@ -588,9 +593,9 @@ function amd_zlrecipe_iframe_content($post_info = null, $get_info = null) {
             if( !$get_info["add-recipe-button"] ) //!!mwp
                  $recipe_title = get_the_title( $get_info["post_id"] ); //!!mwp
             else
-                 $recipe_title = htmlentities($post_info["recipe_title"], ENT_QUOTES);
+                 $recipe_title = amd_zlrecipe_strip_chars( htmlentities($post_info["recipe_title"], ENT_QUOTES) );
             $recipe_image = htmlentities($post_info["recipe_image"], ENT_QUOTES); //!!mwp
-            $summary = htmlentities($post_info["summary"], ENT_QUOTES);
+            $summary = amd_zlrecipe_strip_chars( htmlentities($post_info["summary"], ENT_QUOTES) );
             $rating = htmlentities($post_info["rating"], ENT_QUOTES);
             $prep_time_seconds = htmlentities($post_info["prep_time_seconds"], ENT_QUOTES);
             $prep_time_minutes = htmlentities($post_info["prep_time_minutes"], ENT_QUOTES);
@@ -624,8 +629,9 @@ function amd_zlrecipe_iframe_content($post_info = null, $get_info = null) {
                 //!!mwp $ingredients[$i]["amount"] = htmlentities($post_info["ingredients"][$i]["amount"], ENT_QUOTES);
             }
 */
-            $ingredients = htmlentities($post_info["ingredients"], ENT_QUOTES); //!!mwp
-            $instructions = htmlentities($post_info["instructions"], ENT_QUOTES);
+            $ingredients = amd_zlrecipe_strip_chars( htmlentities($post_info["ingredients"], ENT_QUOTES) ); //!!mwp
+            $instructions = amd_zlrecipe_strip_chars( htmlentities($post_info["instructions"], ENT_QUOTES) );
+            
             //!!mwp if ($recipe_title != null && $recipe_title != '' && $ingredients[0]['name'] != null && $ingredients[0]['name'] != '') {
             if ($recipe_title != null && $recipe_title != '' && $ingredients != null && $ingredients != '') { //!!mwp
                 $recipe_id = amd_zlrecipe_insert_db($post_info);
@@ -747,8 +753,8 @@ function amd_zlrecipe_iframe_content($post_info = null, $get_info = null) {
             <input type='hidden' name='recipe_id' value='$recipe_id' />
             <p id='recipe-title'><label>Recipe Title <span class='required'>*</span></label> <input type='text' name='recipe_title' value='$recipe_title' /></p>
             <p id='recipe-image'><label>Recipe Image</label> <input type='text' name='recipe_image' value='$recipe_image' /></p>
-            <p id='amd_zlrecipe_ingredients' class='cls'><label>Ingredients <span class='required'>*</span> <small>(Put each ingredient on a separate line.  There is no need to use bullets for your ingredients.)</small><small>(Start with an exclamation point to create a label, e.g., "!For the sauce")</small></label><textarea name='ingredients'>$ingredients</textarea></label></p>
-            <p id='amd-zlrecipe-instructions' class='cls'><label>Instructions <small>(Press return after each instruction. There is no need to number your instructions.)</small></label><textarea name='instructions'>$instructions</textarea></label></p>
+            <p id='amd_zlrecipe_ingredients' class='cls'><label>Ingredients <span class='required'>*</span> <small>Put each ingredient on a separate line.  There is no need to use bullets for your ingredients.</small><small>You can also create labels, hyperlinks and even add images! <a href="http://marketing.ziplist.com.s3.amazonaws.com/plugin_instructions.pdf" target="_blank">Learn how here</a></small></label><textarea name='ingredients'>$ingredients</textarea></label></p>
+            <p id='amd-zlrecipe-instructions' class='cls'><label>Instructions <small>Press return after each instruction. There is no need to number your instructions.</small><small>You can also create labels, hyperlinks and even add images! <a href="http://marketing.ziplist.com.s3.amazonaws.com/plugin_instructions.pdf" target="_blank">Learn how here</a></small></label><textarea name='instructions'>$instructions</textarea></label></p>
             <p><a href='#' id='more-options-toggle'>More options</a></p>
             <div id='more-options'>
                 <p class='cls'><label>Summary</label> <textarea name='summary'>$summary</textarea></label></p>
@@ -886,9 +892,9 @@ function amd_zlrecipe_insert_db($post_info) {
         
     $recipe = array (
         "post_id" => $post_info["post_id"],
-        "recipe_title" => $post_info["recipe_title"],
+        "recipe_title" => amd_zlrecipe_strip_chars( $post_info["recipe_title"] ),
         "recipe_image" => $post_info["recipe_image"],
-        "summary" => $post_info["summary"],
+        "summary" => amd_zlrecipe_strip_chars( $post_info["summary"] ),
         "rating" => $post_info["rating"],
         "prep_time" => $prep_time,
         "cook_time" => $cook_time,
@@ -897,8 +903,8 @@ function amd_zlrecipe_insert_db($post_info) {
         "serving_size" => $post_info["serving_size"],
         "calories" => $post_info["calories"],
         "fat" => $post_info["fat"],
-        "ingredients" => $post_info["ingredients"],
-        "instructions" => $post_info["instructions"],
+        "ingredients" => amd_zlrecipe_strip_chars( $post_info["ingredients"] ),
+        "instructions" => amd_zlrecipe_strip_chars( $post_info["instructions"] ),
     );
     
     if (amd_zlrecipe_select_recipe_db($recipe_id) == null) {
@@ -1105,6 +1111,34 @@ function amd_zlrecipe_process_head() {
 }
 add_filter('wp_head', 'amd_zlrecipe_process_head');
 
+// Replaces the [a|b] pattern with text a that links to b
+function amd_zlrecipe_linkify_item($item, $class) {
+	return preg_replace('/\[([^\]\|\[]*)\|([^\]\|\[]*)\]/', '<a href="\\2" class="' . $class . '-link">\\1</a>', $item);
+}
+
+// Processes markup for attributes like labels, images and links
+// !Label
+// %image
+function amd_zlrecipe_format_item($item, $elem, $class, $id, $i) {
+
+	if (preg_match("/^%(.*)/", $item, $matches)) {	// IMAGE
+		$output = '<img class = "' . $class . '-image" src="' . $matches[1] . '" />';
+		return $output;
+	}
+
+	if (preg_match("/^!(.*)/", $item, $matches)) {	// LABEL
+		$class .= '-label';
+		$elem = 'div';
+		$item = $matches[1];
+	}
+
+	$output = '<' . $elem . ' id="' . $id . $i . '" class="' . $class . '">';
+	$output .= amd_zlrecipe_linkify_item($item, $class);
+	$output .= '</' . $elem . '>';
+
+	return $output;
+}
+
 // Formats the recipe for output
 //!!mwp function amd_zlrecipe_format_recipe($recipe, $ingredients) {
 function amd_zlrecipe_format_recipe($recipe) { //!!mwp
@@ -1128,7 +1162,7 @@ function amd_zlrecipe_format_recipe($recipe) { //!!mwp
     //!!mwp add the ZipList recipe button
     if (strcmp(get_option('ziplist_recipe_button_hide'), 'Hide') != 0) {
 		$ziplist_partner_key = get_option('ziplist_partner_key');
-		$output .= '<div class="zl-recipe-link fl-r"><a class="butn-link" title="Add this recipe to your ZipList, where you can store all of your favorite web recipes in one place and easily add ingredients to your shopping list." onmouseup="getZRecipe(this, \''. $ziplist_partner_key .'\', \'\'); return false;" href="javascript:void(0);"><span>Add this recipe to ZipList!</span></a></div>';
+		$output .= '<div id="zl-recipe-link-' . $recipe->recipe_id . '" class="zl-recipe-link fl-r"><a class="butn-link" title="Add this recipe to your ZipList, where you can store all of your favorite web recipes in one place and easily add ingredients to your shopping list." onmouseup="getZRecipe(this, \''. $ziplist_partner_key .'\', \'hrecipe\'); return false;" href="javascript:void(0);"><span>Add this recipe to ZipList!</span></a></div>';
 	}
 
 	//!!dc add the title and close the item class
@@ -1241,7 +1275,7 @@ function amd_zlrecipe_format_recipe($recipe) { //!!mwp
 			</p>';
 		}
 		if ($recipe->summary != null) {
-			$output .= '<p id="zlrecipe-summary" class="summary italic">' . $recipe->summary . '</p>';
+			$output .= '<p id="zlrecipe-summary" class="summary italic">' . amd_zlrecipe_linkify_item($recipe->summary, 'summary') . '</p>';
 		}
 		$output .= '</div>';
 	}
@@ -1266,17 +1300,10 @@ function amd_zlrecipe_format_recipe($recipe) { //!!mwp
     $i = 0;
     $ingredients = explode("\n", $recipe->ingredients); //!!mwp
     foreach ($ingredients as $ingredient) {
-    	if (preg_match("/^!(.*)/", $ingredient, $matches)) {
-    		$ingredient_class = 'ingredient-label';
-    		$ingredient = $matches[1];
-    	} else {
-    		$ingredient_class = 'ingredient';
-    	}
-        $output .= '<' . $ingredient_tag . ' id="zlrecipe-ingredient-' . $i . '" class="' . $ingredient_class . '">';
-        $output .= $ingredient; //!!mwp
-        $output .= '</' . $ingredient_tag . '>';
+		$output .= amd_zlrecipe_format_item($ingredient, $ingredient_tag, 'ingredient', 'zlrecipe-ingredient-', $i);
         $i++;
     }
+
     $output .= '</' . $ingredient_type . '>';
 
 	// add the instructions
@@ -1300,10 +1327,8 @@ function amd_zlrecipe_format_recipe($recipe) { //!!mwp
         $output .= '<' . $instruction_type . ' id="zlrecipe-instructions-list" class="instructions">';
         $j = 0;
         foreach ($instructions as $instruction) {
-            if (strlen($instruction) > 1) {            
-                $output .= '<' . $instruction_tag . ' id="zlrecipe-instruction-' . $j . '" class="instruction">';
-                $output .= $instruction;
-                $output .= '</' . $instruction_tag . '>';
+            if (strlen($instruction) > 1) {
+            	$output .= amd_zlrecipe_format_item($instruction, $instruction_tag, 'instruction', 'zlrecipe-instruction-', $j);
                 $j++;
             }
         }
