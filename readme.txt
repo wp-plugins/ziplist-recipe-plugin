@@ -11,30 +11,36 @@ Donate link: http://sushiday.com/recipe-seo-plugin/
 Tags: recipes, seo, hrecipe, Recipe View
 Requires at least: 3.1
 Tested up to: 3.2
-Stable tag: 1.2
-Version: 1.2
+Stable tag: 1.3
+Version: 1.3
 
-Formats recipes so they are SEO-friendly and more likely to appear in Google’s Recipe View search.
+Formats recipes so they are SEO-friendly and more likely to appear in Google's Recipe View search. New features enhance recipe printing capabilities and provide support for multiple recipes, as well as support for multiple paragraphs in the Summary section. 
 
 == Description ==
 
 Make your recipes SEO-friendly and more likely to appear in [Google's Recipe View](http://googleblog.blogspot.com/2011/02/slice-and-dice-your-recipe-search.html) search. No need to hand-code your recipes into the sophisticated hRecipe microformat when the ZipList Recipe Plugin will do all the heavy lifting for you, enhancing the findability of your recipe website.
 
-As a bonus, the ZipList Recipe Plugin enables you to add a “Save Recipe” button to each recipe so that readers can add favorite recipes to a universal recipe box and shopping list directly from your site. Each recipe they add includes a link back to your site so readers always go back to you for instructions.
+As a bonus, the ZipList Recipe Plugin enables you to add a "Save Recipe" button to each recipe so that readers can add favorite recipes to a universal recipe box and shopping list directly from your site. Each recipe they add includes a link back to your site so readers always go back to you for instructions.
 
-If you’re familiar with the open-source [RecipeSEO](http://recipeseo.com/) plugin built by Allison Day, you’ll quickly note that the ZipList Recipe Plugin is an extension of this plugin. Among the new features added by ZipList are:
+If you're familiar with the open-source [RecipeSEO](http://recipeseo.com/) plugin built by Allison Day, you will quickly note that the ZipList Recipe Plugin is an extension of this plugin. Among the new features added by ZipList are:
 
-*Recipe Image Support:* Add images within the plugin to appear with your recipe.  
+**NEW: Enhanced Printing Capabilities: Add a copyright statement or URL to appear at the bottom of your printed recipes. Also, display a permalink at the bottom of printed recipes so users can easily find individual recipes on your website.
 
-*Copy/Paste Ingredients:* Simply cut a block of ingredients and paste them into one field. No need to add each ingredient one by one into separate fields.
+**NEW: Multiple Recipe Support: The recipe plugin now fully supports the display and printing of multiple recipe posts on a single page.
 
-*Auto-Populate Recipe Name:* The recipe name is automatically replicated inside the plugin, taking the name from the post name, which further enhances SEO.
+**NEW: Multiple Paragraph Support in Summary Section: Users can now add multiple paragraphs to the Summary field within the plugin.
 
-*Integrated Recipe Box and Shopping List:* Turn on a feature that allows readers to save their favorite recipes to an online recipe box, and then add recipe ingredients to their shopping list with one click.
+**Recipe Image Support:** Add images within the plugin to appear with your recipe.
 
-*Add Links to Ingredients or Instructions:* Attach affiliate links or links to related recipes from the Ingredients, Instructions or Summary fields with ease. No other plugin enables you to do this.
+**Copy/Paste Ingredients:** Simply cut a block of ingredients and paste them into one field. No need to add each ingredient one by one into separate fields.
 
-*Incorporate Images into Instructions:* Now you can easily add step-by-step images to your instructions (or ingredients) from within the plugin.
+**Auto-Populate Recipe Name:** The recipe name is automatically replicated inside the plugin, taking the name from the post name, which further enhances SEO.
+
+**Integrated Recipe Box and Shopping List:** Turn on a feature that allows readers to save their favorite recipes to an online recipe box, and then add recipe ingredients to their shopping list with one click.
+
+**Add Links to Ingredients or Instructions:** Attach affiliate links or links to related recipes from the Ingredients, Instructions or Summary fields with ease. No other plugin enables you to do this.
+
+**Incorporate Images into Instructions:** Now you can easily add step-by-step images to your instructions (or ingredients) from within the plugin.
 
 The ZipList Recipe Plugin is very easy to use and you can find step-by-step instructions [here](http://marketing.ziplist.com.s3.amazonaws.com/plugin_instructions_wp.pdf). If you have more questions on how to use the plugin, feel free to reach out to ZipList at [plugins@ziplist.com](mailto:plugins@ziplist.com).
 
@@ -62,7 +68,7 @@ You can email mailto:support@ziplist.com with your requests.
 
 == Screenshots ==
 
-1. The RecipeSEO Plugin icon is located next to the other "Upload/Insert" media icons.
+1. The ZipList Recipe Plugin icon is located next to the other "Upload/Insert" media icons.
 2. It's easy to enter the basic information for your recipes: the title, the ingredients, and the instructions for preparing the recipe.
 3. There is no limit on the number of ingredients you can add.
 4. And if you want to add even more information about your recipe, such as your rating of the recipe, or the serving size, all you have to do is click the "More Options" link, and you can!
@@ -126,9 +132,17 @@ You can email mailto:support@ziplist.com with your requests.
 
 * Support for multiple recipes per page
 * Support for labels in instructions
-* Support for images images in ingredients and instrutions
+* Support for images images in ingredients and instructions
 * Support for hyperlinks in summary, ingredients and instructions
 * Removal of "\" characters introduced by entity encoding
+
+1.3 Features Release
+
+* Printing support for multiple recipes on a page
+* Button support for multiple recipe posts displayed on a single page
+* User-definable copyright statement or site promotion on print page
+* Optional recipe permalink displayed on print page
+* Support for multiple summary paragraphs
 
 == Upgrade Notice ==
 
@@ -137,6 +151,9 @@ Addresses problem of not being able to edit existing recipes on some blogs. Upgr
 
 = 1.2 =
 Feature update. Upgrade to gain access to hyperlink, image and label markup in recipes.
+
+= 1.3 =
+Feature update. Upgrade when the home page of your blog displays multiple recipe posts or to add a copyright/promotional statement and/or permalink to the print output.
 
 == Features that will be added in upcoming versions of the ZipList Recipe Plugin ==
 
