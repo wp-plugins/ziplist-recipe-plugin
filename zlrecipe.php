@@ -4,7 +4,7 @@ Plugin Name: ZipList Recipe Plugin
 Plugin URI: http://www.ziplist.com/recipe_plugin
 Plugin GitHub: https://github.com/Ziplist/recipe_plugin
 Description: A plugin that adds all the necessary microdata to your recipes, so they will show up in Google's Recipe Search
-Version: 1.3
+Version: 1.4
 Author: ZipList.com
 Author URI: http://www.ziplist.com/
 License: GPLv2 or later
@@ -38,12 +38,13 @@ if (!defined('AMD_ZLRECIPE_VERSION_KEY'))
     define('AMD_ZLRECIPE_VERSION_KEY', 'amd_zlrecipe_version');
 
 if (!defined('AMD_ZLRECIPE_VERSION_NUM'))
-    define('AMD_ZLRECIPE_VERSION_NUM', '1.3'); //!!mwp
+    define('AMD_ZLRECIPE_VERSION_NUM', '1.4'); //!!mwp
     
 if (!defined('AMD_ZLRECIPE_PLUGIN_DIRECTORY'))
     define('AMD_ZLRECIPE_PLUGIN_DIRECTORY', get_option('siteurl') . '/wp-content/plugins/' . dirname(plugin_basename(__FILE__)) . '/');
 
-add_option(AMD_ZLRECIPE_VERSION_KEY, AMD_ZLRECIPE_VERSION_NUM);
+add_option(AMD_ZLRECIPE_VERSION_KEY, AMD_ZLRECIPE_VERSION_NUM);  // sort of useless as is never updated
+add_option("amd_zlrecipe_db_version"); // used to store DB version
 
 add_option('ziplist_partner_key', ''); //!!mwp
 add_option('ziplist_recipe_button_hide', ''); //!!mwp
@@ -52,6 +53,8 @@ add_option('zlrecipe_printed_permalink_hide', ''); //!!mwp
 add_option('zlrecipe_printed_copyright_statement', ''); //!!mwp
 add_option('zlrecipe_stylesheet', 'zlrecipe-std'); //!!dc
 add_option('recipe_title_hide', ''); //!!dc (oops, btw)
+add_option('zlrecipe_image_hide', ''); //!!dc
+add_option('zlrecipe_image_hide_print', 'Hide'); //!!dc
 add_option('zlrecipe_print_link_hide', ''); //!!dc
 add_option('zlrecipe_ingredient_label', 'Ingredients');
 add_option('zlrecipe_ingredient_label_hide', '');
@@ -59,6 +62,8 @@ add_option('zlrecipe_ingredient_list_type', 'ul');
 add_option('zlrecipe_instruction_label', 'Instructions'); //!!mwp
 add_option('zlrecipe_instruction_label_hide', '');
 add_option('zlrecipe_instruction_list_type', 'ol');
+add_option('zlrecipe_notes_label', 'Notes'); //!!dc
+add_option('zlrecipe_notes_label_hide', ''); //!!dc
 add_option('zlrecipe_prep_time_label', 'Prep Time:');
 add_option('zlrecipe_prep_time_label_hide', '');
 add_option('zlrecipe_cook_time_label', 'Cook Time:');
@@ -78,8 +83,8 @@ add_option('zlrecipe_rating_label_hide', ''); //!!dc
 add_option('zlrecipe_image_width', ''); //!!dc
 add_option('zlrecipe_outer_border_style', ''); //!!dc
 
-
 register_activation_hook(__FILE__, 'amd_zlrecipe_install');
+add_action('plugins_loaded', 'amd_zlrecipe_install');
 
 add_action('media_buttons', 'amd_zlrecipe_add_recipe_button', 30);
 add_action('init', 'amd_zlrecipe_enhance_mce');
@@ -90,13 +95,29 @@ if (strpos($_SERVER['REQUEST_URI'], 'media-upload.php') && strpos($_SERVER['REQU
 	exit;
 }
 
+global $zlrecipe_db_version;
+$zlrecipe_db_version = "3.1";	// This must be changed when the DB structure is modified
+
 // Creates ZLRecipe tables in the db if they don't exist already.
+// Don't do any data initialization in this routine as it is called on both install as well as
+//   every plugin load as an upgrade check.
+//
+// Updates the table if needed
+// Plugin Ver  DB Ver
+//   1.0        3.0
+//   1.1        3.0
+//   1.2        3.0
+//   1.3        3.0
+//   1.4        3.1  Adds Notes column to recipes table
 function amd_zlrecipe_install() {
     global $wpdb;
+    global $zlrecipe_db_version;
 
     $recipes_table = $wpdb->prefix . "amd_zlrecipe_recipes";
+    $installed_db_ver - get_option("amd_zlrecipe_db_version");
     
-    if($wpdb->get_var("SHOW TABLES LIKE '$recipes_table'") != $recipes_table) {
+    if($wpdb->get_var("SHOW TABLES LIKE '$recipes_table'") != $recipes_table	// NO database exists
+    	|| strcmp($installed_db_ver, $zlrecipe_db_version) != 0) {				// An older database exists
         $sql = "CREATE TABLE " . $recipes_table . " (
             recipe_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             post_id BIGINT(20) UNSIGNED NOT NULL,
@@ -113,31 +134,16 @@ function amd_zlrecipe_install() {
             fat VARCHAR(50),
             ingredients TEXT,
             instructions TEXT,
+            notes TEXT,
             created_at TIMESTAMP DEFAULT NOW()
         	);";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
-    }
-   
- /*!!mwp
-    $ingredients_table = $wpdb->prefix . "amd_zlrecipe_ingredients";
-    
-    if($wpdb->get_var("SHOW TABLES LIKE '$ingredients_table'") != $ingredients_table) {
-        $sql_2 = "CREATE TABLE " . $ingredients_table . " (
-            ingredient_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            recipe_id BIGINT(20) UNSIGNED NOT NULL,
-            name VARCHAR(200) NOT NULL,
-            amount VARCHAR(200),
-            created_at TIMESTAMP DEFAULT NOW()
-        	);";
 
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql_2);
+        update_option("amd_zlrecipe_db_version", $zlrecipe_db_version);
+
     }
- */
- 
-    add_option("amd_zlrecipe_db_version", "3.0"); //!!mwp
 }
 
 add_action('admin_menu', 'amd_zlrecipe_menu_pages');
@@ -173,6 +179,8 @@ function amd_zlrecipe_settings() {
         $printed_copyright_statement = $_POST['printed-copyright-statement'];
         $stylesheet = $_POST['stylesheet'];
         $recipe_title_hide = $_POST['recipe-title-hide'];
+        $image_hide = $_POST['image-hide'];
+        $image_hide_print = $_POST['image-hide-print'];
         $print_link_hide = $_POST['print-link-hide'];
         $ingredient_label = $_POST['ingredient-label'];
         $ingredient_label_hide = $_POST['ingredient-label-hide'];
@@ -180,6 +188,8 @@ function amd_zlrecipe_settings() {
         $instruction_label = $_POST['instruction-label'];
         $instruction_label_hide = $_POST['instruction-label-hide'];
         $instruction_list_type = $_POST['instruction-list-type'];
+        $notes_label = $_POST['notes-label'];
+        $notes_label_hide = $_POST['notes-label-hide'];
         $prep_time_label = $_POST['prep-time-label'];
         $prep_time_label_hide = $_POST['prep-time-label-hide'];
         $cook_time_label = $_POST['cook-time-label'];
@@ -207,6 +217,8 @@ function amd_zlrecipe_settings() {
         update_option('zlrecipe_printed_copyright_statement', $printed_copyright_statement);
         update_option('zlrecipe_stylesheet', $stylesheet);
         update_option('recipe_title_hide', $recipe_title_hide);
+        update_option('zlrecipe_image_hide', $image_hide);
+        update_option('zlrecipe_image_hide_print', $image_hide_print);
         update_option('zlrecipe_print_link_hide', $print_link_hide);
         update_option('zlrecipe_ingredient_label', $ingredient_label);
         update_option('zlrecipe_ingredient_label_hide', $ingredient_label_hide);
@@ -214,6 +226,8 @@ function amd_zlrecipe_settings() {
         update_option('zlrecipe_instruction_label', $instruction_label);
         update_option('zlrecipe_instruction_label_hide', $instruction_label_hide);
         update_option('zlrecipe_instruction_list_type', $instruction_list_type);
+        update_option('zlrecipe_notes_label', $notes_label);
+        update_option('zlrecipe_notes_label_hide', $notes_label_hide);
         update_option('zlrecipe_prep_time_label', $prep_time_label);
         update_option('zlrecipe_prep_time_label_hide', $prep_time_label_hide);
         update_option('zlrecipe_cook_time_label', $cook_time_label);
@@ -240,6 +254,8 @@ function amd_zlrecipe_settings() {
         $printed_copyright_statement = get_option('zlrecipe_printed_copyright_statement');
         $stylesheet = get_option('zlrecipe_stylesheet');
         $recipe_title_hide = get_option('recipe_title_hide');
+        $image_hide = get_option('zlrecipe_image_hide');
+        $image_hide_print = get_option('zlrecipe_image_hide_print');
         $print_link_hide = get_option('zlrecipe_print_link_hide');
         $ingredient_label = get_option('zlrecipe_ingredient_label');
         $ingredient_label_hide = get_option('zlrecipe_ingredient_label_hide');
@@ -247,6 +263,8 @@ function amd_zlrecipe_settings() {
         $instruction_label = get_option('zlrecipe_instruction_label');
         $instruction_label_hide = get_option('zlrecipe_instruction_label_hide');
         $instruction_list_type = get_option('zlrecipe_instruction_list_type');
+        $notes_label = get_option('zlrecipe_notes_label');
+        $notes_label_hide = get_option('zlrecipe_notes_label_hide');
         $prep_time_label = get_option('zlrecipe_prep_time_label');
         $prep_time_label_hide = get_option('zlrecipe_prep_time_label_hide');
         $cook_time_label = get_option('zlrecipe_cook_time_label');
@@ -271,6 +289,8 @@ function amd_zlrecipe_settings() {
     $ziplist_attribution_hide = (strcmp($ziplist_attribution_hide, 'Hide') == 0 ? 'checked="checked"' : '');
     $printed_permalink_hide = (strcmp($printed_permalink_hide, 'Hide') == 0 ? 'checked="checked"' : '');
     $recipe_title_hide = (strcmp($recipe_title_hide, 'Hide') == 0 ? 'checked="checked"' : '');
+    $image_hide = (strcmp($image_hide, 'Hide') == 0 ? 'checked="checked"' : '');
+    $image_hide_print = (strcmp($image_hide_print, 'Hide') == 0 ? 'checked="checked"' : '');
     $print_link_hide = (strcmp($print_link_hide, 'Hide') == 0 ? 'checked="checked"' : '');
 
     // Stylesheet processing
@@ -296,7 +316,7 @@ function amd_zlrecipe_settings() {
     $ins_ol = (strcmp($instruction_list_type, 'ol') == 0 ? 'checked="checked"' : '');
     $ins_p = (strcmp($instruction_list_type, 'p') == 0 ? 'checked="checked"' : '');
     $ins_div = (strcmp($instruction_list_type, 'div') == 0 ? 'checked="checked"' : '');
-    
+
     $prep_time_label_hide = (strcmp($prep_time_label_hide, 'Hide') == 0 ? 'checked="checked"' : '');
     $cook_time_label_hide = (strcmp($cook_time_label_hide, 'Hide') == 0 ? 'checked="checked"' : '');
     $total_time_label_hide = (strcmp($total_time_label_hide, 'Hide') == 0 ? 'checked="checked"' : '');
@@ -305,9 +325,10 @@ function amd_zlrecipe_settings() {
     $calories_label_hide = (strcmp($calories_label_hide, 'Hide') == 0 ? 'checked="checked"' : '');
     $fat_label_hide = (strcmp($fat_label_hide, 'Hide') == 0 ? 'checked="checked"' : '');
     $rating_label_hide = (strcmp($rating_label_hide, 'Hide') == 0 ? 'checked="checked"' : '');
+    $notes_label_hide = (strcmp($notes_label_hide, 'Hide') == 0 ? 'checked="checked"' : '');
     
     $other_options = '';
-    $other_options_array = array('Rating', 'Prep Time', 'Cook Time', 'Total Time', 'Yield', 'Serving Size', 'Calories', 'Fat');
+    $other_options_array = array('Rating', 'Prep Time', 'Cook Time', 'Total Time', 'Yield', 'Serving Size', 'Calories', 'Fat', 'Notes');
     
     foreach ($other_options_array as $option) {
         $name = strtolower(str_replace(' ', '-', $option));
@@ -334,8 +355,9 @@ function amd_zlrecipe_settings() {
                     <td>
                         <input type="text" name="ziplist-partner-key" value="' . $ziplist_partner_key . '" class="regular-text" />
                         <br />
-                        <a href="mailto:plugins@ziplist.com?Subject=Partner%20Key%20Request&body=Please%20send%20me%20a%20partner%20key%20for%20this%20awesome%20ZipList%20Recipe%20Plugin!" target="_blank">
-                            Request a partner key now
+                        <span style="font-weight: bold;">Enhance recipe search and add your blog name and logo to your recipes.</span>
+                        <a href="http://www.ziplist.com/partner_signup" target="_blank">
+                            Request a free partner key now
                         </a>
                     </td>
                 </tr>
@@ -361,8 +383,12 @@ function amd_zlrecipe_settings() {
 			<h3>General</h3>
             <table class="form-table">
                 <tr valign="top">
+                    <th scope="row">Stylesheet</th>
+                    <td><label><input type="checkbox" name="stylesheet" value="zlrecipe-std" ' . $stylesheet . ' /> Use ZipList recipe style</label></td>
+                </tr>
+                <tr valign="top">
                     <th scope="row">Recipe Title</th>
-                    <td><label><input type="checkbox" name="recipe-title-hide" value="Hide" ' . $recipe_title_hide . ' /> Don\'t show Recipe Title</label></td>
+                    <td><label><input type="checkbox" name="recipe-title-hide" value="Hide" ' . $recipe_title_hide . ' /> Don\'t show Recipe Title in post (still shows in print view)</label></td>
                 </tr>
                 <tr valign="top">
                     <th scope="row">Print Button</th>
@@ -373,15 +399,19 @@ function amd_zlrecipe_settings() {
                     <td><label><input type="text" name="image-width" value="' . $image_width . '" class="regular-text" /> pixels</label></td>
                 </tr>
                 <tr valign="top">
+                    <th scope="row">Image Display</th>
+                    <td>
+                    	<label><input type="checkbox" name="image-hide" value="Hide" ' . $image_hide . ' /> Don\'t show Image in post</label>
+                    	<br />
+                    	<label><input type="checkbox" name="image-hide-print" value="Hide" ' . $image_hide_print . ' /> Don\'t show Image in print view</label>
+                    </td>
+                </tr>
+                <tr valign="top">
                 	<th scope="row">Border Style</th>
                 	<td>
 						<select name="outer-border-style">' . $obs . '</select>
 					</td>
 				</tr>
-                <tr valign="top">
-                    <th scope="row">Stylesheet</th>
-                    <td><label><input type="checkbox" name="stylesheet" value="zlrecipe-std" ' . $stylesheet . ' /> Use ZipList recipe style</label></td>
-                </tr>
             </table>
             <hr />            
             <h3>Ingredients</h3>
@@ -487,6 +517,7 @@ function amd_zlrecipe_iframe_content($post_info = null, $get_info = null) {
             $recipe_title = $recipe->recipe_title; //!!xxx amd_zlrecipe_strip_chars( $recipe->recipe_title );
             $recipe_image = $recipe->recipe_image;
             $summary = $recipe->summary; //!!xxx amd_zlrecipe_strip_chars( $recipe->summary );
+            $notes = $recipe->notes;
             $rating = $recipe->rating;
             $ss = array();
             $ss[(int)$rating] = 'selected="true"';
@@ -621,6 +652,7 @@ function amd_zlrecipe_iframe_content($post_info = null, $get_info = null) {
                  $recipe_title = amd_zlrecipe_strip_chars( htmlentities($post_info["recipe_title"], ENT_QUOTES) );
             $recipe_image = htmlentities($post_info["recipe_image"], ENT_QUOTES); //!!mwp
             $summary = amd_zlrecipe_strip_chars( htmlentities($post_info["summary"], ENT_QUOTES) );
+            $notes = amd_zlrecipe_strip_chars( htmlentities($post_info["notes"], ENT_QUOTES) );
             $rating = htmlentities($post_info["rating"], ENT_QUOTES);
             $prep_time_seconds = htmlentities($post_info["prep_time_seconds"], ENT_QUOTES);
             $prep_time_minutes = htmlentities($post_info["prep_time_minutes"], ENT_QUOTES);
@@ -820,6 +852,7 @@ function amd_zlrecipe_iframe_content($post_info = null, $get_info = null) {
                 <p><label>Serving Size</label> <input type='text' name='serving_size' value='$serving_size' /></p>
                 <p><label>Calories</label> <input type='text' name='calories' value='$calories' /></p>
                 <p><label>Fat</label> <input type='text' name='fat' value='$fat' /></p>
+                <p class='cls'><label>Notes</label> <textarea name='notes'>$notes</textarea></label></p>
             </div>
             <input type='submit' value='$submit' name='add-recipe-button' />
         </div>
@@ -916,7 +949,6 @@ function amd_zlrecipe_insert_db($post_info) {
     }
         
     $recipe = array (
-        "post_id" => $post_info["post_id"],
         "recipe_title" => amd_zlrecipe_strip_chars( $post_info["recipe_title"] ),
         "recipe_image" => $post_info["recipe_image"],
         "summary" => amd_zlrecipe_strip_chars( $post_info["summary"] ),
@@ -930,9 +962,11 @@ function amd_zlrecipe_insert_db($post_info) {
         "fat" => $post_info["fat"],
         "ingredients" => amd_zlrecipe_strip_chars( $post_info["ingredients"] ),
         "instructions" => amd_zlrecipe_strip_chars( $post_info["instructions"] ),
+        "notes" => amd_zlrecipe_strip_chars( $post_info["notes"] ),
     );
     
     if (amd_zlrecipe_select_recipe_db($recipe_id) == null) {
+    	$recipe["post_id"] = $post_info["post_id"];	// set only during record creation
         $wpdb->insert( $wpdb->prefix . "amd_zlrecipe_recipes", $recipe );
         $recipe_id = $wpdb->insert_id;
     } else {
@@ -1130,6 +1164,8 @@ function amd_zlrecipe_process_head() {
 	if (strcmp($css, '') != 0) {
 		$header_html .= '<link charset="utf-8" href="http://www.zlcdn.com/stylesheets/minibox/' . $css . '.css" rel="stylesheet" type="text/css" />
 ';
+	/* Dev Testing	$header_html .= '<link charset="utf-8" href="http://dev.ziplist.com.s3.amazonaws.com/' . $css . '.css" rel="stylesheet" type="text/css" />
+'; */
 	}
 
     echo $header_html;
@@ -1186,24 +1222,21 @@ function amd_zlrecipe_format_recipe($recipe) { //!!mwp
 	if ($border_style != null)
 		$style_tag = 'style="border: ' . $border_style . ';"';
     $output .= '
-    <div id="zlrecipe-container-' . $recipe->recipe_id . '" ' . $style_tag . '>
+    <div id="zlrecipe-container-' . $recipe->recipe_id . '" class="zlrecipe-container-border" ' . $style_tag . '>
     <div id="zlrecipe-container" class="hrecipe serif">
       <div id="zlrecipe-innerdiv">
         <div class="item b-b">';
 
     // Add the print button
     if (strcmp(get_option('zlrecipe_print_link_hide'), 'Hide') != 0) {
-		$output .= '<div class="zlrecipe-print-link fl-r"><a class="butn-link" title="Print this recipe" href="#" onclick="zlrPrint(\'zlrecipe-container-' . $recipe->recipe_id . '\'); return false">Print</a></div>';
+		$output .= '<div class="zlrecipe-print-link fl-r"><a class="butn-link" title="Print this recipe" href="javascript:void(0);" onclick="zlrPrint(\'zlrecipe-container-' . $recipe->recipe_id . '\'); return false">Print</a></div>';
 	}
 
     //!!mwp add the ZipList recipe button
     if (strcmp(get_option('ziplist_recipe_button_hide'), 'Hide') != 0) {
 		$ziplist_partner_key = get_option('ziplist_partner_key');
 		$output .= '<div id="zl-recipe-link-' . $recipe->recipe_id . '" class="zl-recipe-link fl-r">
-		  <a class="butn-link" title="Add this recipe to your ZipList, where you can store all of your favorite web recipes in one place and easily add ingredients to your shopping list."
-		    onmouseup="getZRecipeArgs(this, {\'partner_key\':\''. $ziplist_partner_key . '\', \'url\':\'' . $permalink . '\', \'class\':\'hrecipe\'}); return false;"
-		    href="javascript:void(0);"><span>Add this recipe to ZipList!</span>
-		  </a>
+		  <a class="butn-link" title="Add this recipe to your ZipList, where you can store all of your favorite web recipes in one place and easily add ingredients to your shopping list." onmouseup="getZRecipeArgs(this, {\'partner_key\':\''. $ziplist_partner_key . '\', \'url\':\'' . $permalink . '\', \'class\':\'hrecipe\'}); return false;" href="javascript:void(0);"></a>
 		</div>';
 	}
 
@@ -1214,8 +1247,8 @@ function amd_zlrecipe_format_recipe($recipe) { //!!mwp
 	$output .= '<div id="zlrecipe-title" class="fn b-b h-1 strong' . $hide_tag . '" >' . $recipe->recipe_title . '</div>
       </div>';
 	
-	//!!dc open the meta and fl-l container divs
-	$output .= '<div class="meta clear">
+	//!!dc open the zlmeta and fl-l container divs
+	$output .= '<div class="zlmeta zlclear">
       <div class="fl-l width-50">';
 
     if ($recipe->rating != 0) {
@@ -1223,10 +1256,7 @@ function amd_zlrecipe_format_recipe($recipe) { //!!mwp
         if (strcmp(get_option('zlrecipe_rating_label_hide'), 'Hide') != 0) {
         	$output .= get_option('zlrecipe_rating_label') . ' ';
         }
-        $output .= '<span class="rating rating-' . $recipe->rating . '">
-          	<span class="average">' . $recipe->rating . '</span>
-          	<span class="count" style="display: none;">1</span>
-          </span>
+        $output .= '<span class="rating rating-' . $recipe->rating . '"><span class="average">' . $recipe->rating . '</span><span class="count" style="display: none;">1</span></span>
        </p>';
     }
     
@@ -1300,20 +1330,25 @@ function amd_zlrecipe_format_recipe($recipe) { //!!mwp
 
     //!! close the second container
     $output .= '</div>
-      <div class="clear">
+      <div class="zlclear">
       </div>
     </div>';
 
     //!! create image and summary container
     if ($recipe->recipe_image != null || $recipe->summary != null) {
-    	$style_tag = '';
         $output .= '<div class="img-desc-wrap">';
 		if ($recipe->recipe_image != null) {
+			$style_tag = '';
+			$class_tag = '';
 			$image_width = get_option('zlrecipe_image_width');
 			if ($image_width != null) {
 				$style_tag = 'style="width: ' . $image_width . 'px;"';
 			}
-			$output .= '<p class="t-a-c">
+			if (strcmp(get_option('zlrecipe_image_hide'), 'Hide') == 0)
+				$class_tag .= ' hide-card';
+			if (strcmp(get_option('zlrecipe_image_hide_print'), 'Hide') == 0)
+				$class_tag .= ' hide-print';
+			$output .= '<p class="t-a-c' . $class_tag . '">
 			  <img class="photo" src="' . $recipe->recipe_image . '" title="' . $recipe->recipe_title . '" ' . $style_tag . ' />
 			</p>';
 		}
@@ -1380,6 +1415,18 @@ function amd_zlrecipe_format_recipe($recipe) { //!!mwp
         $output .= '</' . $instruction_type . '>';
     }
 
+    //!! add notes section
+    if ($recipe->notes != null) {
+        if (strcmp(get_option('zlrecipe_notes_label_hide'), 'Hide') != 0) {
+            $output .= '<p id="zlrecipe-notes" class="h-4 strong">' . get_option('zlrecipe_notes_label') . '</p>';
+        }
+
+		$output .= '<div id="zlrecipe-notes-list">';
+		$output .= amd_zlrecipe_break( '<p class="notes">', amd_zlrecipe_linkify_item($recipe->notes, 'notes'), '</p>' );
+		$output .= '</div>';
+
+	}
+
 	//!!mwp add ZipList attribution and version
 	$hide_tag = '';
     if (strcmp(get_option('ziplist_attribution_hide'), 'Hide') == 0)
@@ -1394,7 +1441,7 @@ function amd_zlrecipe_format_recipe($recipe) { //!!mwp
 
     $output .= '</div>'; //!!dc
 
-    //!!mwp add copyright statement for printed output (outside the dotted print line)
+    // Add copyright statement for printed output (outside the dotted print line)
     $printed_copyright_statement = get_option('zlrecipe_printed_copyright_statement');
     if (strlen($printed_copyright_statement) > 0) {
 		$output .= '<div id="zl-printed-copyright-statement">' . $printed_copyright_statement . '</div>';
