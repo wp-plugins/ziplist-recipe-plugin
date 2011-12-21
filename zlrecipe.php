@@ -4,7 +4,7 @@ Plugin Name: ZipList Recipe Plugin
 Plugin URI: http://www.ziplist.com/recipe_plugin
 Plugin GitHub: https://github.com/Ziplist/recipe_plugin
 Description: A plugin that adds all the necessary microdata to your recipes, so they will show up in Google's Recipe Search
-Version: 1.4
+Version: 1.41
 Author: ZipList.com
 Author URI: http://www.ziplist.com/
 License: GPLv2 or later
@@ -108,16 +108,15 @@ $zlrecipe_db_version = "3.1";	// This must be changed when the DB structure is m
 //   1.1        3.0
 //   1.2        3.0
 //   1.3        3.0
-//   1.4        3.1  Adds Notes column to recipes table
+//   1.4x       3.1  Adds Notes column to recipes table
 function amd_zlrecipe_install() {
     global $wpdb;
     global $zlrecipe_db_version;
 
     $recipes_table = $wpdb->prefix . "amd_zlrecipe_recipes";
-    $installed_db_ver - get_option("amd_zlrecipe_db_version");
+    $installed_db_ver = get_option("amd_zlrecipe_db_version");
     
-    if($wpdb->get_var("SHOW TABLES LIKE '$recipes_table'") != $recipes_table	// NO database exists
-    	|| strcmp($installed_db_ver, $zlrecipe_db_version) != 0) {				// An older database exists
+    if(strcmp($installed_db_ver, $zlrecipe_db_version) != 0) {				// An older (or no) database table exists
         $sql = "CREATE TABLE " . $recipes_table . " (
             recipe_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             post_id BIGINT(20) UNSIGNED NOT NULL,
@@ -1016,16 +1015,22 @@ function amd_zlrecipe_plugin_footer() {
             output += rid;
             output += '" class="amd-zlrecipe-recipe" src="' + getoption + '/wp-content/plugins/' + dirname + '/zlrecipe-placeholder.png" alt="" />';
             
-        	if ( typeof tinyMCE != 'undefined' && ( ed = tinyMCE.activeEditor ) && !ed.isHidden() ) {
+        	if ( typeof tinyMCE != 'undefined' && ( ed = tinyMCE.activeEditor ) && !ed.isHidden() ) {  //!!mwp path followed when in Visual editor mode
         		ed.focus();
         		if ( tinymce.isIE )
         			ed.selection.moveToBookmark(tinymce.EditorManager.activeEditor.windowManager.bookmark);
 
         		ed.execCommand('mceInsertContent', false, output);
 
-        	} else if ( typeof edInsertContent == 'function' ) {
-        		edInsertContent(edCanvas, output);
+        	} else if ( typeof edInsertContent == 'function' ) {  //!!mwp path followed when in HTML editor mode
+                output = '[amd-zlrecipe-recipe:'; //!!mwp
+                output += rid;
+                output += ']';
+                edInsertContent(edCanvas, output);
         	} else {
+                output = '[amd-zlrecipe-recipe:'; //!!mwp
+                output += rid;
+                output += ']';
         		jQuery( edCanvas ).val( jQuery( edCanvas ).val() + output );
         	}
         }
@@ -1174,7 +1179,7 @@ add_filter('wp_head', 'amd_zlrecipe_process_head');
 
 // Replaces the [a|b] pattern with text a that links to b
 function amd_zlrecipe_linkify_item($item, $class) {
-	return preg_replace('/\[([^\]\|\[]*)\|([^\]\|\[]*)\]/', '<a href="\\2" class="' . $class . '-link">\\1</a>', $item);
+	return preg_replace('/\[([^\]\|\[]*)\|([^\]\|\[]*)\]/', '<a href="\\2" class="' . $class . '-link" target="_blank">\\1</a>', $item);
 }
 
 function amd_zlrecipe_break( $otag, $text, $ctag) {
