@@ -11,7 +11,7 @@ Donate link: http://sushiday.com/recipe-seo-plugin/
 Tags: recipes, seo, hrecipe, Recipe View
 Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 1.4
+Stable tag: 1.41
 Version: 1.41
 
 Formats recipes so they are SEO-friendly. New features include a Notes field and enhanced image display options.
