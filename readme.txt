@@ -4,37 +4,34 @@ Plugin Name: ZipList Recipe Plugin
 Plugin URI: http://www.ziplist.com/recipe_plugin
 Plugin GitHub: https://github.com/Ziplist/recipe_plugin
 License: GPLv3 or later
-Tags: recipe, hrecipe, google rich snippets, seo
 Author URI: http://www.ziplist.com/
 Author: ZipList, Inc.
 Donate link: http://sushiday.com/recipe-seo-plugin/
-Tags: recipes, seo, hrecipe, Recipe View
+Tags: recipe, recipe card, recipe box, shopping list, grocery list, save recipe, print recipe, hrecipe, schema.org, google rich snippets, seo, recipe seo
 Requires at least: 3.1
-Tested up to: 3.5
-Stable tag: 2.2
-Version: 2.2
+Tested up to: 3.9
+Stable tag: 2.4
+Version: 2.4
 
-Formats recipes so they are SEO-friendly. Now fully supports WordPress 3.5.
+Formats recipes so they are SEO-friendly. Now fully supports WordPress 3.9.
 
 == Description ==
 
+ZipList brings your recipes right to your readers’ tables!
+
 Make your recipes SEO-friendly and more likely to appear in [Google's Recipe View](http://googleblog.blogspot.com/2011/02/slice-and-dice-your-recipe-search.html) search. No need to hand-code your recipes into a sophisticated recipe structure when the ZipList Recipe Plugin will do all the heavy lifting for you, enhancing the findability of your recipe website.
 
-As a bonus, the ZipList Recipe Plugin enables you to add a "Save Recipe" button to each recipe so that readers can add favorite recipes to a universal recipe box and shopping list directly from your site. Each recipe they add includes a link back to your site so readers always go back to you for instructions.
+The ZipList Recipe Plugin enables you to add a "Save Recipe" button to each recipe so that readers can add favorite recipes to a recipe box directly from your site. Each recipe they add includes a link back to your site so readers always go back to you for instructions. Plus, give your readers the option to add your recipe's ingredients right to their grocery shopping list. It’s easy with just one click.  
 
-If you're familiar with the open-source [RecipeSEO](http://recipeseo.com/) plugin built by Allison Day, you will quickly note that the ZipList Recipe Plugin is an extension of this plugin. Among the new features added by ZipList are:
+If you’re familiar with the open-source [RecipeSEO](http://recipeseo.com/) plugin built by Allison Day, you’ll quickly note that the ZipList Recipe Plugin is an extension of this plugin. The ZipList Recipe Plugin is very easy use, however, we also provide enhanced [step-by-step instructions](http://marketing.ziplist.com.s3.amazonaws.com/plugin_instructions.pdf). 
 
-**NEW: Works with WordPress 3.5:** Updated for full compatibility with WordPress 3.5.
+Among the new features added by ZipList are:
 
-**Bold and Asterisk Styling:** Add bold or italicized styling to words or phrases within the Ingredients, Instructions, Summary and Notes sections. 
+**Works with WordPress 3.9:** Updated for full compatibility with WordPress 3.9.
 
 **Schema/Recipe Support:** Automatically integrate Schema.org's Recipe mark-up into your recipe posts to make them more findable by search engines. 
 
-**Notes Field:** Add notes to your recipes, such as optional ingredients, required kitchen tools and equipment and/or additional instructions (e.g., freezing, microwave, etc.)
-
-**Modified Image Display:** Add a recipe image to the plugin so that it displays in a user’s recipe box, but then choose to hide it from view on your recipe post and/or print view.
-
-**Simplified Partner Registration:** Self-service user interface for partner key registration so that your logo and website name sit next to recipes that appear in user recipe boxes and in the ZipList recipe search index.
+**Integrated Recipe Box and Grocery Shopping List** Turn on a feature that allows readers to save their favorite recipes to an online recipe box, and then add recipe ingredients to their shopping list with one click. Used by over 3,000 bloggers, it also supports ZipList's full shopping list and recipe box capabilities as used on[RecipeGirl](http://www.recipegirl.com/), [Skinnytaste](http://skinnytaste.com/), [Southern Plate](http://southernplate.com/) and over 500 other leading food and lifestyle web sites.
 
 **Recipe Image Support:** Add images within the plugin to appear with your recipe.
 
@@ -42,39 +39,78 @@ If you're familiar with the open-source [RecipeSEO](http://recipeseo.com/) plugi
 
 **Auto-Populate Recipe Name:** The recipe name is automatically replicated inside the plugin, taking the name from the post name, which further enhances SEO.
 
-**Integrated Recipe Box and Shopping List:** Turn on a feature that allows readers to save their favorite recipes to an online recipe box, and then add recipe ingredients to their shopping list with one click. Used by over 2,000 bloggers, it also supports ZipList's full shopping list and recipe box capabilities as used on [RecipeGirl](http://www.recipegirl.com/), [Skinnytaste](http://skinnytaste.com/), [Southern Plate](http://southernplate.com/) and over 100 other leading food and lifestyle web sites.
-
 **Add Links to Ingredients or Instructions:** Attach affiliate links or links to related recipes from the Ingredients, Instructions or Summary fields with ease. No other plugin enables you to do this.
 
+**Bold and Asterisk Styling:** Add bold or italicized styling to words or phrases within the Ingredients, Instructions, Summary and Notes sections. 
+
+**Modified Image Display:** Add a recipe image to the plugin so that it displays in a user’s recipe box, but then choose to hide it from view on your recipe post and/or print view.
+
 **Incorporate Images into Instructions:** Now you can easily add step-by-step images to your instructions (or ingredients) from within the plugin.
+
+**Notes Field:** Add notes to your recipes, such as optional ingredients, required kitchen tools and equipment and/or additional instructions (e.g., freezing, microwave, etc.)
 
 **Enhanced Printing Capabilities:** Add a copyright statement or URL to appear at the bottom of your printed recipes. Also, display a permalink at the bottom of printed recipes so users can easily find individual recipes on your website.
 
 **Multiple Paragraph Support in Summary Section:** Users can now add multiple paragraphs to the Summary field within the plugin.
 
-The ZipList Recipe Plugin is very easy to use and you can find step-by-step instructions [here](http://marketing.ziplist.com.s3.amazonaws.com/plugin_instructions.pdf). If you have more questions on how to use the plugin, feel free to reach out to ZipList at [plugins@ziplist.com](mailto:plugins@ziplist.com).
+**Simplified Partner Registration:** Self-service user interface for partner key registration so that your logo and website name sit next to recipes that appear in user recipe boxes and in the ZipList recipe search index.
+
+The ZipList Recipe Plugin is very easy use, however, we also provide enhanced [step-by-step instructions](http://marketing.ziplist.com.s3.amazonaws.com/plugin_instructions.pdf). If you have more questions on how to use the plugin, feel free to reach out to ZipList at [plugins@ziplist.com](mailto:plugins@ziplist.com).
 
 == Installation ==
 
-You can download and install the ZipList Recipe Plugin using the built-in WordPress plugin installer. If you download the Ziplist Recipe Plugin manually, make sure it is uploaded to "/wp-content/plugins/ziplist-recipe-plugin/".
+You can download and install the ZipList Recipe Plugin using the built-in WordPress plugin installer. If you download the ZipList Recipe Plugin manually, make sure it is uploaded to "/wp-content/plugins/ziplist-recipe-plugin/".
 
 Activate the ZipList Recipe Plugin in the "Plugins" admin panel using the "Activate" link.
 
 To use the plugin, click the little ZipList Recipe icon on the "Edit Post" pages, right next to the other "Upload/Insert" links at the top of the text editor box. Then enter the details about your recipe into the appropriate boxes, and then click the "Add Recipe" button. This will save your recipe, and insert it into your blog post.
 
+The ZipList Recipe Plugin is very easy use, however, we also provide enhanced [step-by-step instructions](http://marketing.ziplist.com.s3.amazonaws.com/plugin_instructions.pdf). If you have more questions on how to use the plugin, feel free to reach out to ZipList at [plugins@ziplist.com](mailto:plugins@ziplist.com).
+
 == Frequently Asked Questions ==
+
+= Where can my readers view the recipes that have been added to their recipe box or shopping list? =
+
+When your recipes are saved to a reader's recipe box or shopping list, they are accessible anytime, anywhere on ZipList's free website or mobile apps. We permit, and even encourage, linking to the standard recipe box and shopping list on your site to help users find your saved recipes even faster.
+
+ZipList Shopping List link:[http://www.ziplist.com/mylist/](http://www.ziplist.com/mylist/)
+
+ZipList Recipe Box link:[http://www.ziplist.com/recipes/box](http://www.ziplist.com/recipes/box)
+
+ZipList iPhone App:[https://itunes.apple.com/us/app/ziplist-shopping-lists-grocery/id335575008?mt=8](https://itunes.apple.com/us/app/ziplist-shopping-lists-grocery/id335575008?mt=8)
+
+ZipList Android App:[https://play.google.com/store/apps/details?id=com.ziplist.app&hl=en](https://play.google.com/store/apps/details?id=com.ziplist.app&hl=en)
+
+= When I use ZipList's plugin or button code, where are the recipes stored? =
+
+Whether you use the ZipList recipe plugin or you simply add the ZipList button script to your website, your recipes are always stored on your own website.
+
+Even with the ZipList Recipe Plugin, your recipes are stored safely in a separate DB table in your main WP database. The recipe table is named wp_amd_zlrecipe_recipes and you can take a look at it yourself using any WordPress database tools at your disposal.
+
+Much like Google, ZipList creates a simplified "index" entry of your recipes for use in presenting recipe search results, but this is not a full "copy" of the recipe and serves only to hold a representation of the partner website. For example, if you change a recipe on your website that you published months ago, ZipList will shortly "notice" this and update the recipe search and all of the information in user recipe boxes that link back to the original recipe.
+
+In short, your website keeps your recipes and ZipList refers all recipe "view" traffic back to the original partner content.
+
+= If the ZipList service were to go down, what would happen to my recipes? =
+
+The short answer is "nothing"! :) The display of your recipes on your site has nothing to do with the ZipList service and the only thing that would change is that the ZipList "Save Recipe" button would no longer function.
+
+The ZipList Recipe Plugin simply takes the recipe information from your own database and displays it with the SEO annotation and it does this without any connection or communication with the ZipList service itself as the two really are completely independent. The only time there is communication between ZipList and your website is when one of your customers clicks the Save Recipe button, at which time a reference to the recipe and your website is saved in the user's recipe box on ZipList.
+
+If ZipList ever does "go away", you can simply uncheck the option to show the ZipList button and you will continue to enjoy SEO-friendly display of your recipes without any connection to ZipList.
 
 = Why do you put a placeholder image into my Edit Post page, instead of my actual recipe? =
 
 Because of the way WordPress' text editor works, if you decide to add or remove something from your recipe using the text editor, it can very easily mess up the markup of the code - so the ZipList plugin prevents that from happening by not allowing you to edit the recipe in the text editor.
 
-= What if my site is in HTML5? =
+= Can I use the plugin to add multiple recipes to one post or page?
 
-We will have a version that uses microdata (instead of microformats) for websites that use HTML5 very soon! But for now, the microformats that we use should work just fine for all HTML5 sites.
+There should only be recipe per post or page. The plugin does allow for compound recipes which is one way to include multiple lists of ingredients in your post.Simply enter your instructions or the main recipe, then start the next line with an exclamation point to create a label, like "!For the Salad Dressing". Then, add the instructions for the secondary recipe.
 
 = How can I request a feature to be added in future versions of the ZipList Recipe Plugin? =
 
 You can email mailto:support@ziplist.com with your requests.
+
 
 == Screenshots ==
 
@@ -91,6 +127,18 @@ You can email mailto:support@ziplist.com with your requests.
 11. Edited!  Easy as can be.
 
 == Changelog ==
+
+2.4 Editor Upgrade, Performance and Bugfix Release
+
+* Simpler, single-button recipe add/edit button in post edit
+* Improved mobile compatibility with mobile-based Add Recipe popup
+* Easier recipe/print button customizations for web output
+* Improved character encoding and handling - thanks [smerriman!](http://github.com/smerriman)
+* Improved blogger site performance with CDN cached assets
+
+2.3 Emergency Fix for WordPress 3.9 upgrade to TinyMCE v4
+* Editor disabled, view recipes only
+* Early introductions of v2.4 features
 
 2.1/2.2 Bugfix Releases
 
@@ -164,6 +212,15 @@ Bugfix update. Upgrade if you are experiencing repeating DB errors regarding a c
 = 2.0 =
 Feature update. Upgrapde for the benefits of Schema.org/Recipe and bold/italic formatting
 
+== Other Notes ==
+
+ZipList brings your recipes right to your readers’ shopping lists.
+
+From list to life, ZipList is the must-have shopping list and recipe box that makes life easier.
+
+Love you. Save you. List you. Don't forget you.
+
 == Features that will be added in upcoming versions of the ZipList Recipe Plugin ==
 
+* You tell us!
 * Have a suggestion for a feature we should add? [Drop us a line](mailto:support@ziplist.com)
