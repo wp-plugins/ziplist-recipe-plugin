@@ -10,8 +10,8 @@ Donate link: http://sushiday.com/recipe-seo-plugin/
 Tags: recipe, recipe card, recipe box, shopping list, grocery list, save recipe, print recipe, hrecipe, schema.org, google rich snippets, seo, recipe seo
 Requires at least: 3.1
 Tested up to: 3.9
-Stable tag: 2.4
-Version: 2.4
+Stable tag: 2.5
+Version: 2.5
 
 Formats recipes so they are SEO-friendly. Now fully supports WordPress 3.9.
 
@@ -63,11 +63,23 @@ You can download and install the ZipList Recipe Plugin using the built-in WordPr
 
 Activate the ZipList Recipe Plugin in the "Plugins" admin panel using the "Activate" link.
 
-To use the plugin, click the little ZipList Recipe icon on the "Edit Post" pages, right next to the other "Upload/Insert" links at the top of the text editor box. Then enter the details about your recipe into the appropriate boxes, and then click the "Add Recipe" button. This will save your recipe, and insert it into your blog post.
+To use the plugin, click the little ZipList Recipe icon on the "Edit Post" pages, right next to the other editor toolbar buttons at the top of the text editor box. Then enter the details about your recipe into the appropriate boxes, and then click the "Add Recipe" button. This will save your recipe, and insert it into your blog post.
 
 The ZipList Recipe Plugin is very easy use, however, we also provide enhanced [step-by-step instructions](http://marketing.ziplist.com.s3.amazonaws.com/plugin_instructions.pdf). If you have more questions on how to use the plugin, feel free to reach out to ZipList at [plugins@ziplist.com](mailto:plugins@ziplist.com).
 
 == Frequently Asked Questions ==
+
+= How do I edit a recipe with the ZipList Recipe Plugin? =
+
+Starting with version 2.4, you'll want to click the spoon and fork icon on the visual editor toolbar to both create and edit a recipe. You no longer need to click on the image placeholder within the blog post to edit a recipe.
+
+= Can I use the plugin to add multiple recipes to one post or page? =
+
+There should only be one recipe per post or page. The plugin does allow for compound recipes which is one way to include multiple lists of ingredients in your post (e.g., for a salad and a salad dressing).Simply enter your instructions for the main recipe, then start the next line with an exclamation point to create a label, like "!For the Salad Dressing". Then, add the instructions for the secondary recipe. Starting with version 2.4, we no longer support multiple ZipList-formatted recipes within a single post.
+
+= I created a specially-designed Save Recipe button to match my website, but when I upgraded the plugin, my customizations disappeared. How can I get them back? =
+
+Starting with version 2.4, we no longer support using custom CSS to integrate a designer Save Recipe button. However, we added a new feature to make it easier for you to add in a custom Save Recipe button. Simply go into the plugin settings and toward the top of the page you'll see fields to enter custom image URLs for your Save Recipe and Print buttons, should you choose to do so.
 
 = Where can my readers view the recipes that have been added to their recipe box or shopping list? =
 
@@ -103,10 +115,6 @@ If ZipList ever does "go away", you can simply uncheck the option to show the Zi
 
 Because of the way WordPress' text editor works, if you decide to add or remove something from your recipe using the text editor, it can very easily mess up the markup of the code - so the ZipList plugin prevents that from happening by not allowing you to edit the recipe in the text editor.
 
-= Can I use the plugin to add multiple recipes to one post or page?
-
-There should only be recipe per post or page. The plugin does allow for compound recipes which is one way to include multiple lists of ingredients in your post.Simply enter your instructions or the main recipe, then start the next line with an exclamation point to create a label, like "!For the Salad Dressing". Then, add the instructions for the secondary recipe.
-
 = How can I request a feature to be added in future versions of the ZipList Recipe Plugin? =
 
 You can email mailto:support@ziplist.com with your requests.
@@ -114,19 +122,20 @@ You can email mailto:support@ziplist.com with your requests.
 
 == Screenshots ==
 
-1. The ZipList Recipe Plugin icon is located next to the other "Upload/Insert" media icons.
-2. It's easy to enter the basic information for your recipes: the title, the ingredients, and the instructions for preparing the recipe.
-3. There is no limit on the number of ingredients you can add.
+1. The ZipList Recipe Plugin icon appears as a fork and spoon on the visual editor toolbar.
+2. It's easy to enter the basic information for your recipes: the title, the ingredients and the instructions for preparing the recipe.
+3. There is no limit to the number of ingredients you can add.
 4. And if you want to add even more information about your recipe, such as your rating of the recipe, or the serving size, all you have to do is click the "More Options" link, and you can!
 5. You can fill out as many or as few additional options as you would like.
-6. Once you click the "Add Recipe" button, a placeholder image will be inserted into your post where your recipe will go.
+6. Once you click the "Add Recipe" button, a placeholder image will be inserted into your post where your recipe will go. If you need to edit your recipe, simply click on the spoon and fork icon in the visual editor toolbar (you do not need to click on the recipe placeholder as you did in previous releases of the plugin).
 7. Once you preview or publish the post, your recipe will be there with all your microformats... without any extra work from you!
 8. Voila! Your new recipe can easily be styled with CSS, to look however you would like.
-9. But what if you want to make changes to the recipe you just entered?  All you have to do is click on the placeholder image, and then click on the big fat edit image (the left-hand one).
-10. Make your changes and click the "Update Recipe" button...
-11. Edited!  Easy as can be.
 
 == Changelog ==
+2.5 Bugfix Release
+
+* Fixes problem of not properly opening recipe dialog in separate window on some sites
+* Documentation updates for new editing method
 
 2.4 Editor Upgrade, Performance and Bugfix Release
 
@@ -137,6 +146,7 @@ You can email mailto:support@ziplist.com with your requests.
 * Improved blogger site performance with CDN cached assets
 
 2.3 Emergency Fix for WordPress 3.9 upgrade to TinyMCE v4
+
 * Editor disabled, view recipes only
 * Early introductions of v2.4 features
 
@@ -147,7 +157,7 @@ You can email mailto:support@ziplist.com with your requests.
 2.0 Features Release
 
 * Move to Schema.org/Recipe from hrecipe microformat
-* Bold and Italic formatting of ingredients, instructions, summary and note
+* Bold and Italic formatting of ingredients, instructions, summary and notes
 * Confirm stability on WP 3.3.1
 
 1.41 Bugfix Release
