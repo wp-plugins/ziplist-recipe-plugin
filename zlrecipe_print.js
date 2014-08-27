@@ -3,7 +3,7 @@ Plugin Name: ZipList Recipe Plugin
 Plugin URI: http://www.ziplist.com/recipe_plugin
 Plugin GitHub: https://github.com/Ziplist/recipe_plugin
 Description: A plugin that adds all the necessary microdata to your recipes, so they will show up in Google's Recipe Search
-Version: 2.5
+Version: 2.6
 Author: ZipList.com
 Author URI: http://www.ziplist.com/
 License: CC 3.0 http://creativecommons.org/licenses/by/3.0/
@@ -42,12 +42,10 @@ function zlrPrint(id)
 	win.document.write('<html><head>');
 	win.document.write('<link charset=\'utf-8\' href=\'http://www.zlcdn.com/stylesheets/minibox/zlrecipe-print.css\' rel=\'stylesheet\' type=\'text/css\' />');
 	/* win.document.write('<link charset=\'utf-8\' href=\'http://dev.ziplist.com.s3.amazonaws.com/zlrecipe-print.css\' rel=\'stylesheet\' type=\'text/css\' />'); */
-	win.document.write('</head><body>');
+	win.document.write('</head><body onload="print();">');
 	win.document.write('<div id=\'zlrecipe-print-container\' >');
 	win.document.write(content);
 	win.document.write('</div>');
 	win.document.write('</body></html>');
 	win.document.close();
-	win.print();
-	// win.close();
 }

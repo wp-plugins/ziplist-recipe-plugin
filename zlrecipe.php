@@ -4,7 +4,7 @@ Plugin Name: ZipList Recipe Plugin
 Plugin URI: http://www.ziplist.com/recipe_plugin
 Plugin GitHub: https://github.com/Ziplist/recipe_plugin
 Description: A plugin that adds all the necessary microdata to your recipes, so they will show up in Google's Recipe Search
-Version: 2.5
+Version: 2.6
 Author: ZipList.com
 Author URI: http://www.ziplist.com/
 License: GPLv3 or later
@@ -40,10 +40,10 @@ if (!defined('AMD_ZLRECIPE_VERSION_KEY'))
     define('AMD_ZLRECIPE_VERSION_KEY', 'amd_zlrecipe_version');
 
 if (!defined('AMD_ZLRECIPE_VERSION_NUM'))
-    define('AMD_ZLRECIPE_VERSION_NUM', '2.5');
+    define('AMD_ZLRECIPE_VERSION_NUM', '2.6');
 
 if (!defined('AMD_ZLRECIPE_PLUGIN_DIRECTORY'))
-    define('AMD_ZLRECIPE_PLUGIN_DIRECTORY', get_option('siteurl') . '/wp-content/plugins/' . dirname(plugin_basename(__FILE__)) . '/');
+		define('AMD_ZLRECIPE_PLUGIN_DIRECTORY', plugins_url() . '/' . dirname(plugin_basename(__FILE__)) . '/');
 
 add_option(AMD_ZLRECIPE_VERSION_KEY, AMD_ZLRECIPE_VERSION_NUM);  // sort of useless as is never updated
 add_option("amd_zlrecipe_db_version"); // used to store DB version
@@ -98,7 +98,7 @@ function amd_zlrecipe_js_vars() {
     global $current_screen;
     $type = $current_screen->post_type;
 
-    if (is_admin() && $type == 'post' || $type == 'page') {
+    if (is_admin()) {
         ?>
         <script type="text/javascript">
         var post_id = '<?php global $post; echo $post->ID; ?>';
@@ -131,18 +131,10 @@ $zlrecipe_db_version = "3.1";	// This must be changed when the DB structure is m
 //   every plugin load as an upgrade check.
 //
 // Updates the table if needed
-// Plugin Ver  DB Ver
-//   1.0        3.0
-//   1.1        3.0
-//   1.2        3.0
-//   1.3        3.0
-//   1.4x       3.1  Adds Notes column to recipes table
-//   1.5        3.1
-//   1.50       3.1
-//   2.0        3.1
-//   2.3        3.1
-//   2.4        3.1
-//   2.5        3.1
+// Plugin Ver         DB Ver
+//   1.0 - 1.3        3.0
+//   1.4x - 2.6       3.1  Adds Notes column to recipes table
+
 function amd_zlrecipe_install() {
     global $wpdb;
     global $zlrecipe_db_version;
@@ -202,7 +194,7 @@ function amd_zlrecipe_settings() {
         wp_die('You do not have sufficient permissions to access this page.');
     }
 
-    $zlrecipe_icon = AMD_ZLRECIPE_PLUGIN_DIRECTORY . "zlrecipe.gif";
+    $zlrecipe_icon = AMD_ZLRECIPE_PLUGIN_DIRECTORY . "zlrecipe.png";
 
     if ($_POST['ingredient-list-type']) {
 		foreach ($_POST as $key=>$val) {
@@ -551,9 +543,7 @@ function amd_zlrecipe_add_recipe_button() {
     if ( !current_user_can('edit_posts') && !current_user_can('edit_pages') ) {
    	return;
     }
-    // verify the post type
-    if( ! in_array( $typenow, array( 'post', 'page' ) ) )
-        return;
+
 	// check if WYSIWYG is enabled
 	if ( get_user_option('rich_editing') == 'true') {
 		add_filter('mce_external_plugins', 'amd_zlrecipe_tinymce_plugin');
@@ -764,8 +754,7 @@ function amd_zlrecipe_iframe_content($post_info = null, $get_info = null) {
 	$notes = esc_textarea($notes);
 
     $id = (int) $_REQUEST["post_id"];
-    $url = get_option('siteurl');
-    $dirname = dirname(plugin_basename(__FILE__));
+    $plugindir = AMD_ZLRECIPE_PLUGIN_DIRECTORY;
     $submitform = '';
     if ($post_info != null) {
         $submitform .= "<script>window.onload = amdZLRecipeSubmitForm;</script>";
@@ -775,7 +764,7 @@ function amd_zlrecipe_iframe_content($post_info = null, $get_info = null) {
 
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" href="$url/wp-content/plugins/$dirname/zlrecipe-dlog.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="$plugindir/zlrecipe-dlog.css" type="text/css" media="all" />
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     <script type="text/javascript">//<!CDATA[
 
@@ -795,7 +784,7 @@ function amd_zlrecipe_iframe_content($post_info = null, $get_info = null) {
 
                 return false;
             }
-            window.parent.amdZLRecipeInsertIntoPostEditor('$recipe_id','$url','$dirname');
+            window.parent.amdZLRecipeInsertIntoPostEditor('$recipe_id');
             top.tinymce.activeEditor.windowManager.close(window);
         }
 
@@ -986,8 +975,8 @@ function amd_zlrecipe_insert_db($post_info) {
 
 // Inserts the recipe into the post editor
 function amd_zlrecipe_plugin_footer() {
-    $url = get_option('siteurl');
-    $dirname = dirname(plugin_basename(__FILE__));
+	$url = site_url();
+	$plugindir = AMD_ZLRECIPE_PLUGIN_DIRECTORY;
 
     echo <<< HTML
     <style type="text/css" media="screen">
@@ -997,16 +986,17 @@ function amd_zlrecipe_plugin_footer() {
         #wp_editrecipebtn:hover,#wp_delrecipebtn:hover { background:#000; filter:alpha(opacity=100); -moz-opacity:1; -khtml-opacity: 1; opacity: 1; }
     </style>
     <script>//<![CDATA[
-    var baseurl = '$url';
-    var dirname = '$dirname';
-        function amdZLRecipeInsertIntoPostEditor(rid,getoption,dirname) {
+    var baseurl = '$url';          // This variable is used by the editor plugin
+    var plugindir = '$plugindir';  // This variable is used by the editor plugin
+
+        function amdZLRecipeInsertIntoPostEditor(rid) {
             tb_remove();
 
             var ed;
 
             var output = '<img id="amd-zlrecipe-recipe-';
             output += rid;
-            output += '" class="amd-zlrecipe-recipe" src="' + getoption + '/wp-content/plugins/' + dirname + '/zlrecipe-placeholder.png" alt="" />';
+						output += '" class="amd-zlrecipe-recipe" src="' + plugindir + '/zlrecipe-placeholder.png" alt="" />';
 
         	if ( typeof tinyMCE != 'undefined' && ( ed = tinyMCE.activeEditor ) && !ed.isHidden() && ed.id=='content') {  //path followed when in Visual editor mode
         		ed.focus();
@@ -1049,7 +1039,7 @@ function amd_zlrecipe_convert_to_recipe($post_text) {
             $recipe_id = str_replace('"', '', $recipe_id);
             $recipe = amd_zlrecipe_select_recipe_db($recipe_id);
             $formatted_recipe = amd_zlrecipe_format_recipe($recipe);
-            $output = str_replace('<img id="amd-zlrecipe-recipe-' . $recipe_id . '" class="amd-zlrecipe-recipe" src="' . get_option('siteurl') . '/wp-content/plugins/' . dirname(plugin_basename(__FILE__)) . '/zlrecipe-placeholder.png?ver=1.0" alt="" />', $formatted_recipe, $output);
+						$output = str_replace('<img id="amd-zlrecipe-recipe-' . $recipe_id . '" class="amd-zlrecipe-recipe" src="' . plugins_url() . '/' . dirname(plugin_basename(__FILE__)) . '/zlrecipe-placeholder.png?ver=1.0" alt="" />', $formatted_recipe, $output);
         }
     }
 
@@ -1126,7 +1116,7 @@ function amd_zlrecipe_format_duration($duration) {
 function amd_zlrecipe_process_head() {
 
 	// Always add the print script
-    $header_html='<script type="text/javascript" src="' . AMD_ZLRECIPE_PLUGIN_DIRECTORY . 'zlrecipe_print.js"></script>
+    $header_html='<script type="text/javascript" async="" src="' . AMD_ZLRECIPE_PLUGIN_DIRECTORY . 'zlrecipe_print.js"></script>
 ';
 
 	// Recipe styling
@@ -1208,24 +1198,27 @@ function amd_zlrecipe_format_recipe($recipe) {
     	$button_image = 'Print'; // NOT a button image in this case, but this is the legacy version
 		if (strlen($custom_print_image) > 0) {
 			$button_type = 'print-link';
-			$button_image = '<img src=\'' . $custom_print_image . '\'>';
+			$button_image = '<img src="' . $custom_print_image . '">';
 		}
 		$output .= '<div class="zlrecipe-print-link fl-r"><a class="' . $button_type . '" title="Print this recipe" href="javascript:void(0);" onclick="zlrPrint(\'zlrecipe-container-' . $recipe->recipe_id . '\'); return false">' . $button_image . '</a></div>';
 	}
 
     // add the ZipList recipe button
+    $bootstrapcall = '';
     if (strcmp(get_option('ziplist_recipe_button_hide'), 'Hide') != 0) {
-                $ziplist_partner_key = get_option('ziplist_partner_key');
-                $button_image = 'http://asset1.ziplist.com/wk/add_recipe-large.png';
-                $button_type = 'large';
-                $custom_save_image = get_option('zlrecipe_custom_save_image');
-                if (strlen($custom_save_image) > 0) {
-                	$button_type = 'custom';
-                	$button_image = $custom_save_image;
-                }
-                $output .= '<div id="zl-recipe-link-' . $recipe->recipe_id . '" class="zl-recipe-link fl-r"> <script id="wk_script" src="http://www.zlcdn.com/javascripts/wk.js" type="text/javascript"></script><a class="ziplist-button add-recipe ' . $button_type . '" href="http://www.ziplist.com/webkitchen/button/add_recipe?as_partner=' . $ziplist_partner_key . '&amp;url=' . urlencode($permalink) . '" target="_blank"><img src="' . $button_image . '"></a>
+		$ziplist_partner_key = get_option('ziplist_partner_key');
+		$button_image = 'http://asset1.ziplist.com/wk/add_recipe-large.png';
+		$button_type = 'large';
+		$custom_save_image = get_option('zlrecipe_custom_save_image');
+		if (strlen($custom_save_image) > 0) {
+			$button_type = 'custom';
+			$button_image = $custom_save_image;
+		}
+        $output .= '<div id="zl-recipe-link-' . $recipe->recipe_id . '" class="zl-recipe-link fl-r"> <script id="wk_script" src="http://www.zlcdn.com/javascripts/wk.js" type="text/javascript"></script><a class="ziplist-button add-recipe ' . $button_type . '" href="http://www.ziplist.com/webkitchen/button/add_recipe?as_partner=' . $ziplist_partner_key . '&amp;url=' . urlencode($permalink) . '" target="_blank"><img src="' . $button_image . '"></a>
                 </div>';
+		$bootstrapcall = '<script type="text/javascript">wk_bootstrap();</script>';	// used at end of recipe div
     }
+
 	// add the title and close the item class
 	$hide_tag = '';
 	if (strcmp(get_option('recipe_title_hide'), 'Hide') == 0)
@@ -1431,9 +1424,8 @@ function amd_zlrecipe_format_recipe($recipe) {
 		$output .= '<div id="zl-printed-copyright-statement" itemprop="copyrightHolder">' . $printed_copyright_statement . '</div>';
 	}
 
-    $output .= '</div>
-          <script type="text/javascript">wk_bootstrap();</script>
-          <img id="zlrecipe-beacon" src="http://3po.ziplist.com/wp?url=' . urlencode($permalink) . '" width="0" height="0">
+	$output .= '</div>' . $bootstrapcall .
+			'<img id="zlrecipe-beacon" src="http://3po.ziplist.com/wp?url=' . urlencode($permalink) . '" width="0" height="0">
 		</div>';
 
     return $output;
